@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+
 using System.Text;
 using NDesk.Options;
 
@@ -18,6 +18,7 @@ namespace WcfConverter
             bool s = true;
             string file = "";
             string dict = null;
+            int spec = 2;
             byte[] output;
             var p = new OptionSet() {
 				{ "d|decode", "WCF binary to XML converter",
@@ -32,6 +33,8 @@ namespace WcfConverter
 					v => s = v !=null },
                 { "dict=", "Use external dictionary (using Microsoft dictionary by default)",
 				 (string v) => dict = v},
+                  { "spec=", "Specify NBFS specification (1 or 2). Default 2",
+				 (int v) => spec = v},
 				{ "h|help",  "show this message and exit", 
 					v => show_help = v != null },
 			};
@@ -42,7 +45,7 @@ namespace WcfConverter
             try
             {
                 extra = p.Parse(args);
-                WcfXmlMessage.buildDictionary(dict);
+                WcfXmlMessage.buildDictionary(dict, spec);
                 if (show_help)
                     ShowHelp(p);
                 if (file.Length > 0)

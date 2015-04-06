@@ -1,31 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+
 using System.Text;
 using System.Xml;
 using System.IO;
 using System.Resources;
+using System.Runtime.Serialization;
 
 namespace WcfConverter
 {
     public class WcfXmlMessage
     {
         private static XmlDictionary wcfDictionary;
-
-        public static void buildDictionary(String dictionaryLocation)
+      
+       
+        public static void buildDictionary(String dictionaryLocation, int spec)
         {
             string dictionary = null;
-            if (dictionaryLocation == null || dictionaryLocation.Length==0)
-                dictionary = WcfXml.Properties.Resources.dictionary;
+            if (dictionaryLocation == null || dictionaryLocation.Length==0){
+                if (spec == 1) dictionary = WcfXml.Properties.Resources.dictionary_1_0;
+                if (spec == 2) dictionary = WcfXml.Properties.Resources.dictionary_2_0;
+            }
+
+   
             else
             {
                 StreamReader dictionaryFile = new StreamReader(dictionaryLocation);
                 dictionary = dictionaryFile.ReadToEnd();
             }
 
-            List<string> lines = dictionary.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList();
-            WcfXmlMessage.wcfDictionary = new XmlDictionary();
-
+            String[] lines = dictionary.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+            WcfXmlMessage.wcfDictionary = new XmlDictionary();            
             foreach (string line in lines)
             {
                 WcfXmlMessage.wcfDictionary.Add(line);
@@ -35,7 +40,8 @@ namespace WcfConverter
 
         public static string FromArray(byte[] data)
         {
-            XmlDictionaryReader xmlDictionaryReader = XmlDictionaryReader.CreateBinaryReader(data, 0, (int)data.Length, WcfXmlMessage.wcfDictionary, XmlDictionaryReaderQuotas.Max);
+            Stream stream = new MemoryStream(data);
+            XmlDictionaryReader xmlDictionaryReader = XmlDictionaryReader.CreateBinaryReader(stream, wcfDictionary,XmlDictionaryReaderQuotas.Max);          
             XmlDocument xmlDocument = new XmlDocument();
             xmlDocument.Load(xmlDictionaryReader);
             StringWriter stringWriter = new StringWriter();
@@ -54,7 +60,7 @@ namespace WcfConverter
             XmlDocument xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(value);
             MemoryStream memoryStream = new MemoryStream();
-            XmlDictionaryWriter xmlDictionaryWriter = XmlDictionaryWriter.CreateBinaryWriter(memoryStream, WcfXmlMessage.wcfDictionary);
+            XmlDictionaryWriter xmlDictionaryWriter = XmlDictionaryWriter.CreateBinaryWriter(memoryStream, wcfDictionary);
             xmlDocument.WriteTo(xmlDictionaryWriter);
             xmlDictionaryWriter.Flush();
             return memoryStream.ToArray();
