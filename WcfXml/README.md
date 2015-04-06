@@ -16,14 +16,13 @@ Utility to convert from WCF SOAP binary to XML and vice versa. Developed by Khai
        
      -f, --file=VALUE           File location
        
-           --b64, --out-base64    Encode output in Base64 format
+     --b64, --out-base64        Encode output in Base64 format
            
      -s, --out-string           Encode output in String format (default)
        
-     --dict=VALUE           Use external dictionary (using Microsoft
-                                    dictionary by default)
+     --dict=VALUE               Use external dictionary (using Microsoft's builtin dictionary by default)
                                
-     --spec=VALUE           Specify NBFS specification (1 or 2). Default 2
+     --spec=VALUE               Specify NBFS specification (1 or 2). Default 2
            
      -h, --help                 show this message and exit
     
